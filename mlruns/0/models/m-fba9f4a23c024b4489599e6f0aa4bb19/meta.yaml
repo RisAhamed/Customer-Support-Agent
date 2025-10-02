@@ -1,0 +1,10 @@
+artifact_location: file:///C:/Users/riswa/Desktop/AI/Customer-Support-Agent/mlruns/0/models/m-fba9f4a23c024b4489599e6f0aa4bb19/artifacts
+creation_timestamp: 1759420613643
+experiment_id: '0'
+last_updated_timestamp: 1759420721563
+model_id: m-fba9f4a23c024b4489599e6f0aa4bb19
+model_type: null
+name: model
+source_run_id: 4160162ebb85458d812613dff48a5367
+status: 2
+status_message: null

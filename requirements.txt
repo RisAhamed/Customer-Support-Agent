@@ -1,31 +1,36 @@
+# Core requirements
+numpy<2.0.0  # Downgraded to solve compatibility issues
 pandas
-notebook
 scikit-learn
+dill
+
+# ML Tracking
+mlflow
+
+# Visualization
 matplotlib
 seaborn
-# requirements.txt
+notebook
 
-# Core LangChain Framework
+# LangChain Framework (if needed)
 langchain
-ddgs
-# LLM Integrations (Groq for cloud, Ollama for local)
 langchain-groq
 langchain-community
+langchain-chroma
+langchain-text-splitters
+
+# Vector Stores
+chromadb
+fastembed
+
+# LLM Integrations
 ollama
-pyautogen 
+pyautogen
 langchain-google-genai
+
 # Utilities
 python-dotenv
-matplotlib 
 yfinance
 pydantic
-
-# Pre-built Tools
 duckduckgo-search
 newsapi-python
-langchain-chroma 
-langchain-text-splitters 
-chromadb
-# Vector Stores
-fastembed
-mlflow

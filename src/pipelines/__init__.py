@@ -1,0 +1,1 @@
+# Make pipelines a proper package

@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/riswa/Desktop/AI/Customer-Support-Agent/mlruns/0/4160162ebb85458d812613dff48a5367/artifacts
+end_time: 1759420721660
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 4160162ebb85458d812613dff48a5367
+run_name: caring-snake-633
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1759420613409
+status: 3
+tags: []
+user_id: riswa

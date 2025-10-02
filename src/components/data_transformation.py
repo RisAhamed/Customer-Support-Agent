@@ -1,105 +1,96 @@
-import os
 import sys
+import os
 import pandas as pd
-import dill 
-
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-
-from dataclasses import dataclass
-
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from logger import logger
 from exception import CustomException
-from logger import logging
-
-
-
-@dataclass
-class DataTransformationConfig:
-    """Configuration class for data transformation."""
-    # Define the path where we'll save our preprocessing object
-    preprocessor_obj_file_path: str = os.path.join('saved_models', 'preprocessor.pkl')
+from utils import save_object
 
 class DataTransformation:
-    """
-    This class handles the data transformation process, including train-test split
-    and building the preprocessing pipeline.
-    """
     def __init__(self):
-        self.data_transformation_config = DataTransformationConfig()
+        self.preprocessor_obj_file_path = os.path.join('saved_models', 'preprocessor.pkl')
 
     def get_data_transformer_object(self):
         """
-        Creates and returns a Scikit-learn ColumnTransformer object.
-        This object defines the preprocessing steps for our text data.
+        This function is responsible for creating the data transformation pipeline
+        which includes TF-IDF vectorization for the text data.
         """
         try:
-            logging.info("Creating data transformer object")
+            logger.info("Creating data transformer object")
             
-            text_feature = "text"
-            
-            # Create a pipeline just for the text feature
+           
             text_pipeline = Pipeline(steps=[
                 ('tfidf', TfidfVectorizer(stop_words='english', max_features=5000))
             ])
-            
-      
+
+           
             preprocessor = ColumnTransformer(
                 transformers=[
-                    ('text_trans', text_pipeline, [text_feature])
+                    ('text_processing', text_pipeline, 'text')
                 ],
-                remainder='passthrough' # Keep other columns if any (we don't have them now)
-            )
+                remainder='passthrough'  )
             
-            logging.info("Data transformer object created successfully")
+            logger.info("Data transformer object created successfully")
             return preprocessor
 
         except Exception as e:
+            logger.error("Failed to create data transformer object")
             raise CustomException(e, sys)
 
-    def initiate_data_transformation(self, data_path):
+    def initiate_data_transformation(self, df, target_column_name):
         """
-        Loads data, performs train-test split, applies the preprocessing pipeline,
-        and saves the preprocessing object.
+        This method handles the data transformation, including splitting the data,
+        applying the preprocessor, and saving the preprocessor object.
+        
+        Args:
+            df (pd.DataFrame): The input dataframe.
+            target_column_name (str): The name of the target variable column.
+        
+        Returns:
+            tuple: A tuple containing processed train/test feature arrays (X),
+                   train/test target arrays (y), and the path to the saved preprocessor.
         """
         try:
-            logging.info("Data transformation initiated")
+            logger.info("Data transformation initiated")
             
-            df = pd.read_csv(data_path)
-            
-            # For this model, we need the 'text' as our feature (X) and 'category' as our target (y)
-            X = df[['text']]
-            y = df['category']
-            
-            logging.info("Performing train-test split")
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
-            
-            preprocessor_obj = self.get_data_transformer_object()
-            
-            logging.info("Fitting preprocessing object on training data")
-            # Fit the preprocessor on the training data and transform it
-            X_train_processed = preprocessor_obj.fit_transform(X_train)
-            
-            logging.info("Transforming test data")
-            # Transform the test data using the already-fitted preprocessor
-            X_test_processed = preprocessor_obj.transform(X_test)
-            
-            logging.info(f"Saving preprocessing object to: {self.data_transformation_config.preprocessor_obj_file_path}")
-            # Save the fitted preprocessor object for later use in our prediction pipeline
-            with open(self.data_transformation_config.preprocessor_obj_file_path, "wb") as file_obj:
-                dill.dump(preprocessor_obj, file_obj)
+          
+            X = df.drop(columns=[target_column_name], axis=1)
+            y = df[target_column_name]
 
-            logging.info("Data transformation completed successfully")
+            logger.info("Performing train-test split")
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+       
+            assert X_train.shape[0] == y_train.shape[0], "Mismatch in training data samples after split!"
+            assert X_test.shape[0] == y_test.shape[0], "Mismatch in testing data samples after split!"
+            logger.info("Train-test split completed and shapes verified.")
+
+            preprocessing_obj = self.get_data_transformer_object()
+
+            logger.info("Fitting preprocessing object on training data")
+            X_train_processed = preprocessing_obj.fit_transform(X_train)
+            
+            logger.info("Transforming test data")
+            X_test_processed = preprocessing_obj.transform(X_test)
+
+            save_object(
+                file_path=self.preprocessor_obj_file_path,
+                obj=preprocessing_obj
+            )
+            logger.info(f"Saving preprocessing object to: {self.preprocessor_obj_file_path}")
+            
+            logger.info("Data transformation completed successfully")
             
             return (
                 X_train_processed,
-                X_test_processed,
                 y_train,
+                X_test_processed,
                 y_test,
-                self.data_transformation_config.preprocessor_obj_file_path
+                self.preprocessor_obj_file_path
             )
 
         except Exception as e:
+            logger.error(f"Error in data transformation: {e}")
             raise CustomException(e, sys)
