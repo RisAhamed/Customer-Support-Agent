@@ -2,12 +2,16 @@ import os
 import sys
 import numpy as np
 
+# Add the project root directory to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+# Import from root directory
 from exception import CustomException
 from logger import logger
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from components.data_transformation import DataTransformation
-from components.model_trainer import ModelTrainer
+# Import from src directory
+from src.components.data_transformation import DataTransformation
+from src.components.model_trainer import ModelTrainer
 
 def run_training_pipeline():
     """Run the full training pipeline from data transformation to model training."""

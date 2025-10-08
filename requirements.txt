@@ -27,7 +27,9 @@ fastembed
 ollama
 pyautogen
 langchain-google-genai
-
+langchain
+langchain-groq
+python-dotenv
 # Utilities
 python-dotenv
 yfinance

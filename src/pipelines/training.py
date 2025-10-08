@@ -25,10 +25,6 @@ def run_training_pipeline():
         logger.info("="*50)
         logger.info("STARTING THE TRAINING PIPELINE")
         logger.info("="*50)
-        
-        # --- Data Loading ---
-        # Using a dummy dataframe for demonstration. 
-        # In a real scenario, you would load from a file e.g., pd.read_csv('twcs.csv')
         logger.info("Loading data")
         data = {
             'text': [
